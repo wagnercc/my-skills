@@ -28,13 +28,11 @@ export default function Home() {
     }, [greeting]);
   
     function handleAddNewSkill() {
-      
       const data = {
         id: String(new Date().getTime()),
         name: newSkill
       }
-      console.log("data", data)
-      
+
       setMySkills(oldState => [...oldState, data]);
     }
 
