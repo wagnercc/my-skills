@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, FlatList } from 'react-native';
+import { View, Text, StyleSheet, TextInput, FlatList, Platform } from 'react-native';
 import { Button } from '../components/Button';
 import { SkillCard } from '../components/SkillCard';
 
 
+interface SkillData {
+  id: string;
+  name: string;
+  date?: Date;
+}
+
 export default function Home() {
     const [newSkill, setNewSkill] = useState('');
-    const [mySkills, setMySkills] = useState([]);
+    const [mySkills, setMySkills] = useState<SkillData[]>([]);
     const [greeting, setGreeting] = useState('');
 
     useEffect(() => {
@@ -22,7 +28,18 @@ export default function Home() {
     }, [greeting]);
   
     function handleAddNewSkill() {
-      setMySkills(oldState => [...oldState, newSkill]);
+      
+      const data = {
+        id: String(new Date().getTime()),
+        name: newSkill
+      }
+      console.log("data", data)
+      
+      setMySkills(oldState => [...oldState, data]);
+    }
+
+    function handleRemoveSkill(id: string) {
+      setMySkills(oldStage => oldStage.filter(skill => skill.id !== id));
     }
   
     return (
@@ -37,7 +54,7 @@ export default function Home() {
           onChangeText={setNewSkill}
         />
   
-        <Button onPress={handleAddNewSkill}/>
+        <Button onPress={handleAddNewSkill} title="Add"/>
   
         <Text style={[ styles.title, {marginTop: 35 } ]}>
           My Skills
@@ -46,12 +63,14 @@ export default function Home() {
         
         <FlatList
             data={mySkills}
-            keyExtractor={item => item}
+            keyExtractor={item => item.id}
             renderItem={({ item }) => (
-                <SkillCard skill={item}/>
+                <SkillCard
+                  skill={item.name}
+                  onPress={() => handleRemoveSkill(item.id)}
+                />
             )}
         />
-  
   
       </View>
     );
@@ -80,5 +99,4 @@ export default function Home() {
         color: '#FFF',
         marginVertical: 2,
     }
-    
   })
